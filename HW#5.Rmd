@@ -1,0 +1,46 @@
+---
+title: 'HW # 5'
+output: html_document
+date: "2026-10-12"
+---
+
+```{r}
+library(fpp2)
+library(TTR)
+
+# Create Data Frame
+df <- read.csv("~/Downloads/WomenEmploymentData.csv")
+names(df)[2] <- "Number of Women Employed"
+
+# Monthly data starting January 1955
+emp <- ts(df[, 2], start = c(1955, 1), frequency = 12)
+
+# We need to fill in the missing October 2025 Value
+sum(is.na(emp))
+emp <- na.interp(emp)
+
+# Plot the data
+plot(emp)
+
+# STL decomposition
+stl_decomp <- stl(emp, s.window = "periodic")
+plot(stl_decomp)
+
+# Seasonally adjusted line on the original
+plot(emp)
+lines(seasadj(stl_decomp), col = "Red")
+
+# Default period forecast
+f_stl <- forecast(stl_decomp)
+f_stl <- forecast(stl_decomp,h=15)
+f_stl
+plot(f_stl)
+
+# Other method
+decomp_elec <- decompose(emp)
+
+# Different Attributes
+attributes(decomp_elec)
+seasadj(decomp_elec)
+
+```
